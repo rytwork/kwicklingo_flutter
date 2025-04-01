@@ -65,7 +65,7 @@ class SignUpController extends GetxController {
           password: passwordTextController.text.trim(),
         );
         if (credential.user != null) {
-          sendOtp("+${phoneFieldController.value.countryCode}${phoneFieldController.value.nsn}");
+          // sendOtp("+${phoneFieldController.value.countryCode}${phoneFieldController.value.nsn}");
           databaseManager.addUser(
               fullName: nameTextController.text,
               email: emailTextController.text,
@@ -76,7 +76,7 @@ class SignUpController extends GetxController {
               isForUpdate: false, phoneNumber: '', countryCode: '');
           EasyLoading.dismiss();
           ToastUtils.showToast("The account has been successfully created.");
-          // Get.offAndToNamed(AppRoutes.homeRoute);
+          Get.offAndToNamed(AppRoutes.homeRoute);
         } else {
           EasyLoading.dismiss();
         }
@@ -104,33 +104,33 @@ class SignUpController extends GetxController {
   }
 
 
-  Future<void> sendOtp(String phoneNumber) async {
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        await FirebaseAuth.instance.currentUser?.linkWithCredential(credential);
-        Fluttertoast.showToast(msg: "MFA linked successfully!");
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        Fluttertoast.showToast(msg: "Verification Failed: ${e.message}");
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        this.verificationId = verificationId;
-        isOtpSent = true;
-        update();
-        print("phoneNumber $phoneNumber and verificationId $verificationId");
-        Fluttertoast.showToast(msg: "OTP sent to $phoneNumber");
-        Get.toNamed(AppRoutes.otpVerificationScreen, arguments: {
-          "verificationId": verificationId,
-          "phoneNumber": phoneNumber
-        });
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        this.verificationId = verificationId;
-      },
-    );
-  }
-
+  // Future<void> sendOtp(String phoneNumber) async {
+  //   await FirebaseAuth.instance.verifyPhoneNumber(
+  //     phoneNumber: phoneNumber,
+  //     verificationCompleted: (PhoneAuthCredential credential) async {
+  //       await FirebaseAuth.instance.currentUser?.linkWithCredential(credential);
+  //       Fluttertoast.showToast(msg: "MFA linked successfully!");
+  //     },
+  //     verificationFailed: (FirebaseAuthException e) {
+  //       Fluttertoast.showToast(msg: "Verification Failed: ${e.message}");
+  //     },
+  //     codeSent: (String verificationId, int? resendToken) {
+  //       this.verificationId = verificationId;
+  //       isOtpSent = true;
+  //       update();
+  //       print("phoneNumber $phoneNumber and verificationId $verificationId");
+  //       Fluttertoast.showToast(msg: "OTP sent to $phoneNumber");
+  //       Get.toNamed(AppRoutes.otpVerificationScreen, arguments: {
+  //         "verificationId": verificationId,
+  //         "phoneNumber": phoneNumber
+  //       });
+  //     },
+  //     codeAutoRetrievalTimeout: (String verificationId) {
+  //       this.verificationId = verificationId;
+  //     },
+  //   );
+  // }
+  //
   PhoneNumberInputValidator getValidator(BuildContext context) {
     List<PhoneNumberInputValidator> validators = [];
     if (mobileOnly) {

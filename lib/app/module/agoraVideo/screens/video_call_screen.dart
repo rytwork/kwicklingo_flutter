@@ -11,7 +11,7 @@ class VideoCallScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<VideoCallController>(
       init: VideoCallController(),
-      builder: (context) {
+      builder: (controller) {
         return Scaffold(
           body: Column(
             children: [
@@ -71,6 +71,25 @@ class VideoCallScreen extends StatelessWidget {
                     ).paddingOnly(top: margin_10),
                     Spacer(),
                     InkWell(
+                      onTap: (){
+                        showMenu(
+                          context: context,
+                          position: RelativeRect.fromLTRB(100.0, 100.0, 0.0, 0.0),
+                          items: [
+                            PopupMenuItem(
+                              value: 'logout',
+                              child: TextView(text: 'Logout',textStyle: textStyleBodyLarge().copyWith(
+                                fontSize: font_13,
+                                fontWeight: FontWeight.w700
+                              ),),
+                            ),
+                          ],
+                        ).then((value) {
+                          if (value == 'logout') {
+                            controller.logout();
+                          }
+                        });
+                      },
                       child: AssetImageWidget(iconsAccount,color: Colors.black,imageHeight: height_20,),
                     ).paddingOnly(top: margin_12,right: margin_20),
                   ],

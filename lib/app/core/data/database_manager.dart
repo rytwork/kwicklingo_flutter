@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 
@@ -47,26 +48,25 @@ class DatabaseManager {
     }
   }
 
-  Future<String?> addToWaitingList({
-    required String uid,
-    required bool isForUpdate,
-  }) async {
+
+  Future<void> addToWaitingUsers(String userId) async {
     try {
-      isForUpdate
-          ? await db
-              .collection('connections')
-              .doc('waiting-users')
-              .update({'id': uid})
-          : await db
-              .collection('connections')
-              .doc('waiting-users')
-              .set({'id': uid});
-      return 'success';
+      DocumentReference docRef = db.collection("connections").doc("waiting-users");
+
+      // Ensure document exists
+      await docRef.set({"ids": []}, SetOptions(merge: true));
+
+      // Update Firestore document by adding the new user ID
+      await docRef.update({
+        "ids": FieldValue.arrayUnion([userId]),
+      });
+
+      print("User ID $userId added successfully!");
     } catch (e) {
-      print("Error adding user: ${e.toString()}");
-      return e.toString();
+      print("Error adding user ID: $e");
     }
   }
+
 
   Future<String?> removeFromWaitingList({
     required String uid,
@@ -95,4 +95,11 @@ class DatabaseManager {
       print('error occured');
     }
   }
+
+  Future<User?> getCurrentUser() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    return user;
+  }
+
+
 }

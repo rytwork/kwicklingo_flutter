@@ -43,8 +43,10 @@ class HomepageScreen extends StatelessWidget {
             ),
           ),
           Spacer(),
-          MaterialButton(color: AppColors.affair,onPressed: (){
-            controller.databaseManager.addToWaitingList(uid: "LVU2bOwyT1SS1AdUvqJ0d1JCxUy1", isForUpdate: false);
+          MaterialButton(color: AppColors.affair,onPressed: () async {
+            var user = await controller.databaseManager.getCurrentUser();
+            print("user id : ${user?.uid}");
+            controller.databaseManager.addToWaitingUsers(user?.uid ?? "");
             Get.toNamed(AppRoutes.videoCallScreen);
           },child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
