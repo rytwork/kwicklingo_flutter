@@ -51,6 +51,7 @@ dependencies:
   pinput: ^5.0.1
   flutter_animate:
   image_picker:
+  get_storage: ^2.1.1
 
 dev_dependencies:
   flutter_test:

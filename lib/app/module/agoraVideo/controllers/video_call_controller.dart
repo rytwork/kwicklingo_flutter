@@ -26,8 +26,7 @@ class VideoCallController extends GetxController {
   bool openCamera = true;
   bool muteCamera = false;
   bool muteAllRemoteVideo = false;
-  String channel = "test_channel";
-
+  String channel = "";
   final String appId = "78e6f90660864bdb959afaaf1023e313";
   var token = "";
 
@@ -36,8 +35,8 @@ class VideoCallController extends GetxController {
     super.onInit();
     dotColors = List.generate(dotCount, (index) => Colors.yellow);
     await _requestPermissions();
-    await _initializeAgoraVideoSDK();
     await listenForUpdates();
+    await _initializeAgoraVideoSDK();
     await setupLocalVideo();
     setupEventHandlers();
     _startAnimation();
@@ -53,16 +52,13 @@ class VideoCallController extends GetxController {
       if (snapshot.exists) {
         var data = snapshot.data();
         if (data != null) {
-          data.forEach((channelName, details) {
+          data.forEach((channelName, details) async {
             if (details is Map<String, dynamic>) {
               User? user = _auth.currentUser;
               var myUid = user?.uid ?? "";
               if (details['uid1'] == myUid || details['uid2'] == myUid) {
                 token = details['token'];
-                print("Match found in channel: $channelName");
-                print("Token: ${details['token']}");
-                print("UID1: ${details['uid1']}");
-                print("UID2: ${details['uid2']}");
+                channel = channelName;
                 update();
               }
             }
@@ -75,6 +71,48 @@ class VideoCallController extends GetxController {
     });
   }
 
+
+  Future<void> deleteConnection() async {
+    User? user = _auth.currentUser;
+    var myUid = user?.uid;
+    if (myUid == null) {
+      print("No user is logged in");
+      return;
+    }
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection("connections")
+          .doc("connected-users")
+          .get();
+      if (snapshot.exists) {
+        var data = snapshot.data();
+        if (data != null && data is Map<String, dynamic>) {
+          data.forEach((channelName, details) async {
+            if (details is Map<String, dynamic>) {
+              if (details['uid1'] == myUid || details['uid2'] == myUid) {
+                print("Deleting channel: $channelName");
+                await FirebaseFirestore.instance
+                    .collection("connections")
+                    .doc("connected-users")
+                    .update({
+                  channelName: FieldValue.delete(),
+                });
+                print("Connection deleted for channel: $channelName");
+              }
+            }
+          });
+        } else {
+          print("Document data is null");
+        }
+      } else {
+        print("Document does not exist");
+      }
+    } catch (e) {
+      print("Error deleting connection: $e");
+    }
+  }
+
+
   void _startAnimation() {
     Timer.periodic(const Duration(seconds: 1), (timer) {
       _updateColors();
@@ -86,7 +124,7 @@ class VideoCallController extends GetxController {
     for (int i = 0; i < dotCount; i++) {
       dotColors[i] = _getRandomColor();
     }
-    update(); // To rebuild UI with new colors
+    update();
   }
 
   Color _getRandomColor() {
@@ -118,8 +156,9 @@ class VideoCallController extends GetxController {
           isJoined = true;
           update();
         },
-        onUserJoined: (RtcConnection connection, int uid, int elapsed) {
+        onUserJoined: (RtcConnection connection, int uid, int elapsed) async {
           debugPrint("Remote user $uid joined");
+          await deleteConnection();
           remoteUsers.add(uid);
           update();
         },

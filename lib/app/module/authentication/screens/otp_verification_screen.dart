@@ -87,7 +87,7 @@ class OtpVerificationScreen extends StatelessWidget {
       },
       controller: controller.otpTextController,
       focusNode: controller.otpFocusNode,
-      length: 4,
+      length: 6,
       cursor: Padding(
         padding: EdgeInsets.symmetric(vertical: margin_15),
         child: VerticalDivider(

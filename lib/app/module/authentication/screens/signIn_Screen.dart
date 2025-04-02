@@ -107,8 +107,8 @@ class SingInScreen extends StatelessWidget {
     buttonBgColor: AppColors.affair,
     textColor: Colors.white,
     onPressed: () {
-      // controller.signIn();
-      Get.toNamed(AppRoutes.videoCallScreen);
+      controller.signIn();
+      // Get.toNamed(AppRoutes.videoCallScreen);
     },
     buttonText: strLogin,
   );

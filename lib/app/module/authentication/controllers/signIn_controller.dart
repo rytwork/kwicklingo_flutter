@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../export.dart';
 
 class SignInController extends GetxController {
   RxBool viewPassword = true.obs;
-
+  final GetStorage box = GetStorage();
   TextEditingController emailTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
   // DatabaseManager databaseManager = DatabaseManager();
@@ -43,6 +44,8 @@ class SignInController extends GetxController {
           password: passwordTextController.text.trim(),
         );
         if (credential.user != null) {
+          print("credential.user: ${credential.user}");
+          box.write("uid", credential.user?.uid);
           Get.offAndToNamed(AppRoutes.homeRoute);
           EasyLoading.dismiss();
           isLoggedIn = true;

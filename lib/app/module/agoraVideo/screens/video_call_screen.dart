@@ -197,6 +197,52 @@ class VideoCallScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        height: Get.height/2.2,
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.2),
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                        ),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: ListView.builder(
+                                controller: controller.scrollController,
+                                itemCount: controller.messages.length,
+                                reverse: true,
+                                itemBuilder: (context, index) {
+                                  return TextView(text: controller.messages[index]);
+                                },
+                              ),
+                            ),
+                            // Input field for sending messages
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: controller.messageController,
+                                    decoration: const InputDecoration(
+                                      hintText: "Type a message...",
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.send, color: Colors.grey),
+                                  onPressed: controller.sendMessage,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               )
