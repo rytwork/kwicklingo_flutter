@@ -28,19 +28,26 @@ class VideoCallScreen extends StatelessWidget {
                         width: height_100,
                         decoration: BoxDecoration(
                           color: AppColors.affair,
-                          borderRadius: BorderRadius.circular(radius_5), // Wrap in BorderRadius.circular
+                          borderRadius: BorderRadius.circular(
+                              radius_5), // Wrap in BorderRadius.circular
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            AssetImageWidget(iconsGender,color: Colors.white,imageHeight: height_20,),
-                            SizedBox(width: width_5),
-                            TextView(text: strAll,textStyle: textStyleBodyLarge().copyWith(
+                            AssetImageWidget(
+                              iconsGender,
                               color: Colors.white,
-                              fontSize: font_12,
-                              fontWeight: FontWeight.w500
-                            ),)
+                              imageHeight: height_20,
+                            ),
+                            SizedBox(width: width_5),
+                            TextView(
+                              text: strAll,
+                              textStyle: textStyleBodyLarge().copyWith(
+                                  color: Colors.white,
+                                  fontSize: font_12,
+                                  fontWeight: FontWeight.w500),
+                            )
                           ],
                         ),
                       ),
@@ -52,36 +59,46 @@ class VideoCallScreen extends StatelessWidget {
                         width: height_100,
                         decoration: BoxDecoration(
                           color: AppColors.affair,
-                          borderRadius: BorderRadius.circular(radius_5), // Wrap in BorderRadius.circular
+                          borderRadius: BorderRadius.circular(
+                              radius_5), // Wrap in BorderRadius.circular
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            AssetImageWidget(iconsGlobe,color: Colors.white,imageHeight: height_20,),
+                            AssetImageWidget(
+                              iconsGlobe,
+                              color: Colors.white,
+                              imageHeight: height_20,
+                            ),
                             SizedBox(width: width_5),
-                            TextView(text: strGlobal,textStyle: textStyleBodyLarge().copyWith(
-                                color: Colors.white,
-                                fontSize: font_12,
-                                fontWeight: FontWeight.w500
-                            ),)
+                            TextView(
+                              text: strGlobal,
+                              textStyle: textStyleBodyLarge().copyWith(
+                                  color: Colors.white,
+                                  fontSize: font_12,
+                                  fontWeight: FontWeight.w500),
+                            )
                           ],
                         ),
                       ),
                     ).paddingOnly(top: margin_10),
                     Spacer(),
                     InkWell(
-                      onTap: (){
+                      onTap: () {
                         showMenu(
                           context: context,
-                          position: RelativeRect.fromLTRB(100.0, 100.0, 0.0, 0.0),
+                          position:
+                              RelativeRect.fromLTRB(100.0, 100.0, 0.0, 0.0),
                           items: [
                             PopupMenuItem(
                               value: 'logout',
-                              child: TextView(text: 'Logout',textStyle: textStyleBodyLarge().copyWith(
-                                fontSize: font_13,
-                                fontWeight: FontWeight.w700
-                              ),),
+                              child: TextView(
+                                text: 'Logout',
+                                textStyle: textStyleBodyLarge().copyWith(
+                                    fontSize: font_13,
+                                    fontWeight: FontWeight.w700),
+                              ),
                             ),
                           ],
                         ).then((value) {
@@ -90,8 +107,12 @@ class VideoCallScreen extends StatelessWidget {
                           }
                         });
                       },
-                      child: AssetImageWidget(iconsAccount,color: Colors.black,imageHeight: height_20,),
-                    ).paddingOnly(top: margin_12,right: margin_20),
+                      child: AssetImageWidget(
+                        iconsAccount,
+                        color: Colors.black,
+                        imageHeight: height_20,
+                      ),
+                    ).paddingOnly(top: margin_12, right: margin_20),
                   ],
                 ),
               ),
@@ -155,11 +176,12 @@ class VideoCallScreen extends StatelessWidget {
                       left: 0,
                       right: 0,
                       child: Container(
-                        height: Get.height/2.2,
+                        height: Get.height / 2.2,
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.2),
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12)),
                         ),
                         child: Column(
                           children: [
@@ -168,8 +190,58 @@ class VideoCallScreen extends StatelessWidget {
                                 controller: controller.scrollController,
                                 itemCount: controller.messages.length,
                                 reverse: true,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 10),
                                 itemBuilder: (context, index) {
-                                  return TextView(text: controller.messages[index]);
+                                  final msg = controller.messages[index];
+                                  final avatarLetter =
+                                      controller.getRandomChar();
+                                  final avatarColor =
+                                      controller.getRandomColor();
+
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 4),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Avatar
+                                        CircleAvatar(
+                                          radius: 14,
+                                          backgroundColor: avatarColor,
+                                          child: Text(
+                                            avatarLetter,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Chat Bubble
+                                        Flexible(
+                                          child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black
+                                                    .withOpacity(0.4),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              child: TextView(
+                                                text: msg.text,
+                                                textStyle: TextStyle(
+                                                    color: Colors.white),
+                                              )),
+                                        ),
+                                      ],
+                                    ),
+                                  );
                                 },
                               ),
                             ),
@@ -188,7 +260,8 @@ class VideoCallScreen extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.send, color: Colors.grey),
+                                  icon: const Icon(Icons.send,
+                                      color: Colors.grey),
                                   onPressed: controller.sendMessage,
                                 ),
                               ],
@@ -197,68 +270,68 @@ class VideoCallScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+
                     Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        height: Get.height/2.2,
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.2),
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                        ),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: ListView.builder(
-                                controller: controller.scrollController,
-                                itemCount: controller.messages.length,
-                                reverse: true,
-                                itemBuilder: (context, index) {
-                                  return TextView(text: controller.messages[index]);
-                                },
+                      top: 100,
+                      right: 16,
+                      child: Column(
+                        children: [
+                          // Mute Audio Button
+                          CircleAvatar(
+                            backgroundColor: Colors.black.withOpacity(0.5),
+                            child: IconButton(
+                              icon: Icon(
+                                controller.isMuted ? Icons.mic_off : Icons.mic,
+                                color: Colors.white,
                               ),
+                              onPressed: controller.toggleMute,
                             ),
-                            // Input field for sending messages
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: controller.messageController,
-                                    decoration: const InputDecoration(
-                                      hintText: "Type a message...",
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.send, color: Colors.grey),
-                                  onPressed: controller.sendMessage,
-                                ),
-                              ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Mute Camera Button
+                          CircleAvatar(
+                            backgroundColor: Colors.black.withOpacity(0.5),
+                            child: IconButton(
+                              icon: Icon(
+                                controller.openCamera
+                                    ? Icons.videocam_off
+                                    : Icons.videocam,
+                                color: Colors.white,
+                              ),
+                              onPressed: controller.toggleCamera,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Switch Camera Button
+                          CircleAvatar(
+                            backgroundColor: Colors.black.withOpacity(0.5),
+                            child: IconButton(
+                              icon: const Icon(Icons.switch_camera,
+                                  color: Colors.white),
+                              onPressed: controller.switchUserCamera,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Call End Button
+                          CircleAvatar(
+                            backgroundColor: Colors.red,
+                            child: IconButton(
+                              icon: const Icon(Icons.call_end,
+                                  color: Colors.white),
+                              onPressed: controller.leaveChannel,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               )
-
             ],
           ),
-          // floatingActionButton: FloatingActionButton(
-          //   backgroundColor: Colors.red,
-          //   onPressed: controller.isJoined
-          //       ? controller.leaveChannel
-          //       : controller.joinChannel,
-          //   child: Icon(
-          //     controller.isJoined ? Icons.call_end : Icons.call,
-          //     color: Colors.white,
-          //   ),
-          // ),
         );
       },
     );

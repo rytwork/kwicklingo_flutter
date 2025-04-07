@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,13 +19,14 @@ class VideoCallController extends GetxController {
 
   final int dotCount = 7;
   List<Color> dotColors = [Colors.yellow];
-  List<String> messages = [];
+  // List<String> messages = [];
 
   Set<int> remoteUsers = {};
   bool isJoined = false;
   bool switchCamera = true;
   bool openCamera = true;
   bool muteCamera = false;
+  bool isMuted = false;
   bool muteAllRemoteVideo = false;
   String channel = "";
   final String appId = "78e6f90660864bdb959afaaf1023e313";
@@ -210,6 +212,13 @@ class VideoCallController extends GetxController {
     update();
   }
 
+  void toggleMute() {
+    isMuted = !isMuted;
+    engine.muteLocalAudioStream(isMuted);
+    update(); // use setState if not using GetX
+  }
+
+
   Future<void> toggleCamera() async {
     await engine.enableLocalVideo(!openCamera);
     openCamera = !openCamera;
@@ -223,7 +232,7 @@ class VideoCallController extends GetxController {
   }
 
   void sendMessage() {
-    messages.insert(0, messageController.text);
+    // messages.insert(0, messageController.text);
     messageController.text = "";
     update();
     scrollToBottom();
@@ -247,4 +256,41 @@ class VideoCallController extends GetxController {
       Get.snackbar("Kwicklingo", "Error: ${e.toString()}");
     }
   }
+
+
+  // Function to generate a random color
+  Color getRandomColor() {
+    final random = Random();
+    return Color.fromARGB(
+      255,
+      random.nextInt(200),
+      random.nextInt(200),
+      random.nextInt(200),
+    );
+  }
+
+// Function to get a random character (A-Z)
+  String getRandomChar() {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    return alphabet[Random().nextInt(alphabet.length)];
+  }
+
+
+  // Dummy messages list
+  final List<Message> messages = List.generate(
+    20,
+        (index) => Message(
+      text: 'Message number $index',
+      userName: 'User $index',
+    ),
+  );
+
+}
+
+
+
+class Message {
+  final String text;
+  final String userName;
+  Message({required this.text, required this.userName});
 }
