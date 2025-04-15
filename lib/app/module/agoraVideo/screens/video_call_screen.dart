@@ -16,108 +16,6 @@ class VideoCallScreen extends StatelessWidget {
         return Scaffold(
           body: Column(
             children: [
-              // SizedBox(
-              //   height: height_80,
-              //   child: Row(
-              //     children: [
-              //       SizedBox(
-              //         width: width_20,
-              //       ),
-              //       InkWell(
-              //         child: Container(
-              //           height: height_30,
-              //           width: height_100,
-              //           decoration: BoxDecoration(
-              //             color: AppColors.affair,
-              //             borderRadius: BorderRadius.circular(
-              //                 radius_5), // Wrap in BorderRadius.circular
-              //           ),
-              //           child: Row(
-              //             crossAxisAlignment: CrossAxisAlignment.center,
-              //             mainAxisAlignment: MainAxisAlignment.center,
-              //             children: [
-              //               AssetImageWidget(
-              //                 iconsGender,
-              //                 color: Colors.white,
-              //                 imageHeight: height_20,
-              //               ),
-              //               SizedBox(width: width_5),
-              //               TextView(
-              //                 text: strAll,
-              //                 textStyle: textStyleBodyLarge().copyWith(
-              //                     color: Colors.white,
-              //                     fontSize: font_12,
-              //                     fontWeight: FontWeight.w500),
-              //               )
-              //             ],
-              //           ),
-              //         ),
-              //       ).paddingOnly(top: margin_10),
-              //       SizedBox(width: height_10),
-              //       InkWell(
-              //         child: Container(
-              //           height: height_30,
-              //           width: height_100,
-              //           decoration: BoxDecoration(
-              //             color: AppColors.affair,
-              //             borderRadius: BorderRadius.circular(
-              //                 radius_5), // Wrap in BorderRadius.circular
-              //           ),
-              //           child: Row(
-              //             crossAxisAlignment: CrossAxisAlignment.center,
-              //             mainAxisAlignment: MainAxisAlignment.center,
-              //             children: [
-              //               AssetImageWidget(
-              //                 iconsGlobe,
-              //                 color: Colors.white,
-              //                 imageHeight: height_20,
-              //               ),
-              //               SizedBox(width: width_5),
-              //               TextView(
-              //                 text: strGlobal,
-              //                 textStyle: textStyleBodyLarge().copyWith(
-              //                     color: Colors.white,
-              //                     fontSize: font_12,
-              //                     fontWeight: FontWeight.w500),
-              //               )
-              //             ],
-              //           ),
-              //         ),
-              //       ).paddingOnly(top: margin_10),
-              //       Spacer(),
-              //       InkWell(
-              //         onTap: () {
-              //           showMenu(
-              //             context: context,
-              //             position:
-              //                 RelativeRect.fromLTRB(100.0, 100.0, 0.0, 0.0),
-              //             items: [
-              //               PopupMenuItem(
-              //                 value: 'logout',
-              //                 child: TextView(
-              //                   text: 'Logout',
-              //                   textStyle: textStyleBodyLarge().copyWith(
-              //                       fontSize: font_13,
-              //                       fontWeight: FontWeight.w700),
-              //                 ),
-              //               ),
-              //             ],
-              //           ).then((value) {
-              //             if (value == 'logout') {
-              //               controller.logout();
-              //             }
-              //           });
-              //         },
-              //         child: AssetImageWidget(
-              //           iconsAccount,
-              //           color: Colors.black,
-              //           imageHeight: height_20,
-              //         ),
-              //       ).paddingOnly(top: margin_12, right: margin_20),
-              //     ],
-              //   ),
-              // ),
-              // Remote video on top half
               Expanded(
                 child: controller.remoteUsers.isNotEmpty
                     ? remoteVideo()
@@ -172,7 +70,8 @@ class VideoCallScreen extends StatelessWidget {
                         : const Center(child: CircularProgressIndicator()),
 
                     // Chat view overlay
-                    Positioned(
+                    controller.isJoined
+                        ? Positioned(
                       bottom: 0,
                       left: 0,
                       right: 0,
@@ -270,9 +169,8 @@ class VideoCallScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ),
-
-                    Positioned(
+                    ) : SizedBox(),
+                   Positioned(
                       top: 100,
                       right: 16,
                       child: Column(
@@ -327,7 +225,7 @@ class VideoCallScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
+                    ) ,
                   ],
                 ),
               )

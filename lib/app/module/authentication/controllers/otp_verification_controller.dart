@@ -68,18 +68,16 @@ class OtpVerificationController extends GetxController {
       Fluttertoast.showToast(msg: "Error: Verification ID not found.");
       return;
     }
-
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId!,
         smsCode: otpTextController.text,
       );
-
       await FirebaseAuth.instance.signInWithCredential(credential);
       Get.offAndToNamed(AppRoutes.videoCallScreen);
-      Fluttertoast.showToast(msg: "MFA Verification Successful!");
+      Fluttertoast.showToast(msg: "Otp Verification Successful!");
     } catch (e) {
-      Fluttertoast.showToast(msg: "MFA Verification Failed: $e");
+      Fluttertoast.showToast(msg: "Otp Verification Failed: $e");
     }
   }
 

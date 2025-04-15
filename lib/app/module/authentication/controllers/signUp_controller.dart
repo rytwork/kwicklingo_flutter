@@ -73,10 +73,7 @@ class SignUpController extends GetxController {
               profilePicUrl: 'https://picsum.photos/200/300',
               userName: useNameTextController.text,
               method: credential.credential?.signInMethod ?? "",
-              isForUpdate: false, phoneNumber: '', countryCode: '');
-          EasyLoading.dismiss();
-          ToastUtils.showToast("The account has been successfully created.");
-          // Get.offAndToNamed(AppRoutes.homeRoute);
+              isForUpdate: false, phoneNumber: phoneFieldController.value.nsn, countryCode: phoneFieldController.value.countryCode);
         } else {
           EasyLoading.dismiss();
         }
@@ -109,7 +106,6 @@ class SignUpController extends GetxController {
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
         await FirebaseAuth.instance.currentUser?.linkWithCredential(credential);
-        Fluttertoast.showToast(msg: "MFA linked successfully!");
       },
       verificationFailed: (FirebaseAuthException e) {
         Fluttertoast.showToast(msg: "Verification Failed: ${e.message}");
@@ -118,12 +114,12 @@ class SignUpController extends GetxController {
         this.verificationId = verificationId;
         isOtpSent = true;
         update();
-        print("phoneNumber $phoneNumber and verificationId $verificationId");
         Fluttertoast.showToast(msg: "OTP sent to $phoneNumber");
         Get.toNamed(AppRoutes.otpVerificationScreen, arguments: {
           "verificationId": verificationId,
           "phoneNumber": phoneNumber
         });
+        EasyLoading.dismiss();
       },
       codeAutoRetrievalTimeout: (String verificationId) {
         this.verificationId = verificationId;

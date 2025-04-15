@@ -49,23 +49,47 @@ class DatabaseManager {
   }
 
 
+  Future<Map<String, dynamic>?> getUser(String uuid) async {
+    try {
+      DocumentSnapshot doc = await db.collection('users').doc(uuid).get();
+
+      if (doc.exists) {
+        return doc.data() as Map<String, dynamic>;
+      } else {
+        print("No user found with uuid: $uuid");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting user: ${e.toString()}");
+      return null;
+    }
+  }
+
+
   Future<void> addToWaitingUsers(String userId) async {
     try {
       DocumentReference docRef = db.collection("connections").doc("waiting-users");
 
-      // Ensure document exists
-      await docRef.set({"ids": []}, SetOptions(merge: true));
-
-      // Update Firestore document by adding the new user ID
+      // Append userId to the array (creates document automatically if it doesn't exist)
       await docRef.update({
         "ids": FieldValue.arrayUnion([userId]),
       });
 
       print("User ID $userId added successfully!");
     } catch (e) {
-      print("Error adding user ID: $e");
+      if (e.toString().contains("NOT_FOUND")) {
+        DocumentReference docRef = db.collection("connections").doc("waiting-users");
+        // Document doesn't exist, so create with userId
+        await docRef.set({
+          "ids": [userId]
+        });
+        print("Document created and User ID $userId added.");
+      } else {
+        print("Error adding user ID: $e");
+      }
     }
   }
+
 
 
   Future<String?> removeFromWaitingList({

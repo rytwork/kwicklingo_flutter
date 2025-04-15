@@ -75,9 +75,10 @@ class VideoCallController extends GetxController {
           update();
         },
         onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
+            UserOfflineReasonType reason) async {
           debugPrint("Remote user $remoteUid left");
           remoteUsers.remove(remoteUid);
+          await deleteConnection();
           update();
         },
         onError: (ErrorCodeType code, String message) {

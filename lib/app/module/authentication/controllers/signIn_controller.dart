@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../export.dart';
 
@@ -8,7 +9,9 @@ class SignInController extends GetxController {
   final GetStorage box = GetStorage();
   TextEditingController emailTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
-  // DatabaseManager databaseManager = DatabaseManager();
+  DatabaseManager databaseManager = DatabaseManager();
+  String? verificationId;
+  bool isOtpSent = false;
 
   FocusNode emailFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
@@ -44,9 +47,12 @@ class SignInController extends GetxController {
           password: passwordTextController.text.trim(),
         );
         if (credential.user != null) {
-          print("credential.user: ${credential.user}");
-          box.write("uid", credential.user?.uid);
-          Get.offAndToNamed(AppRoutes.homeRoute);
+          var userData = await databaseManager.getUser('${credential.user?.uid}');
+          if (userData != null) {
+            sendOtp("+${userData['countryCode']}${userData['phoneNumber']}");
+          } else {
+            print("User not found.");
+          }
           EasyLoading.dismiss();
           isLoggedIn = true;
           update();
@@ -69,6 +75,34 @@ class SignInController extends GetxController {
       ToastUtils.showToast(strFillAllRequired);
     }
   }
+
+  Future<void> sendOtp(String phoneNumber) async {
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await FirebaseAuth.instance.currentUser?.linkWithCredential(credential);
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        Fluttertoast.showToast(msg: "Verification Failed: ${e.message}");
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        this.verificationId = verificationId;
+        isOtpSent = true;
+        update();
+        Fluttertoast.showToast(msg: "OTP sent to $phoneNumber");
+        Get.toNamed(AppRoutes.otpVerificationScreen, arguments: {
+          "verificationId": verificationId,
+          "phoneNumber": phoneNumber
+        });
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        this.verificationId = verificationId;
+      },
+    );
+  }
+
+
+
   //
   //
   // signInWithGoogle() async {
