@@ -65,15 +65,8 @@ class SignUpController extends GetxController {
           password: passwordTextController.text.trim(),
         );
         if (credential.user != null) {
-          sendOtp("+${phoneFieldController.value.countryCode}${phoneFieldController.value.nsn}");
-          databaseManager.addUser(
-              fullName: nameTextController.text,
-              email: emailTextController.text,
-              uuid: "${credential.user?.uid}",
-              profilePicUrl: 'https://picsum.photos/200/300',
-              userName: useNameTextController.text,
-              method: credential.credential?.signInMethod ?? "",
-              isForUpdate: false, phoneNumber: phoneFieldController.value.nsn, countryCode: phoneFieldController.value.countryCode);
+          sendOtp("+${phoneFieldController.value.countryCode}${phoneFieldController.value.nsn}", credential.user!.uid);
+
         } else {
           EasyLoading.dismiss();
         }
@@ -92,7 +85,6 @@ class SignUpController extends GetxController {
         ToastUtils.showToast('Exception: $e');
       } finally{
         isIgnoreInteraction = false;
-        EasyLoading.dismiss();
         update();
       }
     } else {
@@ -101,7 +93,7 @@ class SignUpController extends GetxController {
   }
 
 
-  Future<void> sendOtp(String phoneNumber) async {
+  Future<void> sendOtp(String phoneNumber,String guid) async {
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
@@ -113,13 +105,25 @@ class SignUpController extends GetxController {
       codeSent: (String verificationId, int? resendToken) {
         this.verificationId = verificationId;
         isOtpSent = true;
-        update();
+        Get.toNamed(
+          AppRoutes.otpVerificationScreen,
+          arguments: {
+            "verificationId": verificationId,
+            "phoneNumber": phoneNumber,
+            "guid": guid,
+            "fullName": nameTextController.text,
+            "email": emailTextController.text,
+            "profilePicUrl": 'https://picsum.photos/200/300',
+            "userName": useNameTextController.text,
+            "isForSignUp": true,
+            "phoneNsn": phoneFieldController.value.nsn,
+            "countryCode": phoneFieldController.value.countryCode,
+          },
+        );
+
         Fluttertoast.showToast(msg: "OTP sent to $phoneNumber");
-        Get.toNamed(AppRoutes.otpVerificationScreen, arguments: {
-          "verificationId": verificationId,
-          "phoneNumber": phoneNumber
-        });
         EasyLoading.dismiss();
+        update();
       },
       codeAutoRetrievalTimeout: (String verificationId) {
         this.verificationId = verificationId;

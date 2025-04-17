@@ -232,8 +232,8 @@ class OtpVerificationScreen extends StatelessWidget {
                 text: strResend,
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    controller.start.value = 30;
-                    controller.startTimer();
+                  print("controller.contactNumber: ${controller.contactNumber}");
+                    controller.resendOtp();
                   },
                 style: textStyleTitleSmall().copyWith(
                     fontWeight: FontWeight.w600,

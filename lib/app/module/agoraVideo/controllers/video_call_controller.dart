@@ -237,6 +237,7 @@ class VideoCallController extends GetxController {
 
   void sendMessage() async {
     final user = FirebaseAuth.instance.currentUser;
+    print("user_id: ${user?.uid}");
     var message = messageController.text.trim();
     if (user != null && message.isNotEmpty) {
       try {

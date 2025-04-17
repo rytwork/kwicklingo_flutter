@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../export.dart';
 
 class ForgotPasswordController extends GetxController {

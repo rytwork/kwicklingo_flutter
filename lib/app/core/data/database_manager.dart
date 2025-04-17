@@ -15,6 +15,7 @@ class DatabaseManager {
     required String email,
     required String profilePicUrl,
     required String uuid,
+    required String guid,
     required String method,
     required String phoneNumber,
     required String countryCode,
@@ -27,6 +28,7 @@ class DatabaseManager {
               'name': fullName,
               'userName': userName,
               'email': email,
+              'guid': guid,
               'profilePicUrl': profilePicUrl,
               'method': method,
               'phoneNumber': phoneNumber,
@@ -36,6 +38,7 @@ class DatabaseManager {
               'name': fullName,
               'userName': userName,
               'email': email,
+              'guid': guid,
               'profilePicUrl': profilePicUrl,
               'method': method,
               'phoneNumber': phoneNumber,
@@ -48,27 +51,36 @@ class DatabaseManager {
     }
   }
 
-
   Future<Map<String, dynamic>?> getUser(String uuid) async {
     try {
-      DocumentSnapshot doc = await db.collection('users').doc(uuid).get();
+      QuerySnapshot query = await db
+          .collection('users')
+          .where('guid', isEqualTo: uuid)
+          .limit(1)
+          .get();
 
-      if (doc.exists) {
-        return doc.data() as Map<String, dynamic>;
+      if (query.docs.isNotEmpty) {
+        DocumentSnapshot doc = query.docs.first;
+        if (doc.exists) {
+          return doc.data() as Map<String, dynamic>;
+        } else {
+          print("No user found with uuid: $uuid");
+          return null;
+        }
       } else {
-        print("No user found with uuid: $uuid");
-        return null;
+        print('No user found with the given guid.');
       }
     } catch (e) {
       print("Error getting user: ${e.toString()}");
       return null;
     }
+    return null;
   }
-
 
   Future<void> addToWaitingUsers(String userId) async {
     try {
-      DocumentReference docRef = db.collection("connections").doc("waiting-users");
+      DocumentReference docRef =
+          db.collection("connections").doc("waiting-users");
 
       // Append userId to the array (creates document automatically if it doesn't exist)
       await docRef.update({
@@ -78,7 +90,8 @@ class DatabaseManager {
       print("User ID $userId added successfully!");
     } catch (e) {
       if (e.toString().contains("NOT_FOUND")) {
-        DocumentReference docRef = db.collection("connections").doc("waiting-users");
+        DocumentReference docRef =
+            db.collection("connections").doc("waiting-users");
         // Document doesn't exist, so create with userId
         await docRef.set({
           "ids": [userId]
@@ -89,8 +102,6 @@ class DatabaseManager {
       }
     }
   }
-
-
 
   Future<String?> removeFromWaitingList({
     required String uid,
@@ -124,6 +135,4 @@ class DatabaseManager {
     User? user = FirebaseAuth.instance.currentUser;
     return user;
   }
-
-
 }

@@ -49,6 +49,7 @@ class SignInController extends GetxController {
         if (credential.user != null) {
           var userData = await databaseManager.getUser('${credential.user?.uid}');
           if (userData != null) {
+            print("userData: $userData");
             sendOtp("+${userData['countryCode']}${userData['phoneNumber']}");
           } else {
             print("User not found.");
@@ -63,12 +64,13 @@ class SignInController extends GetxController {
           update();
         }
       } on FirebaseAuthException catch (e) {
+        EasyLoading.dismiss();
         ToastUtils.showToast("${e.message}");
       } catch (e) {
+        EasyLoading.dismiss();
         ToastUtils.showToast("$e");
       } finally{
         isLoggedIn = true;
-        EasyLoading.dismiss();
         update();
       }
     } else {
