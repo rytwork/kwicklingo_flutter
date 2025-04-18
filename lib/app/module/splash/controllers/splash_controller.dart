@@ -31,7 +31,7 @@ class SplashController extends GetxController {
         var userId = await box.read("uid");
         print("userId: $userId");
         if (userId == null) {
-          Get.offAndToNamed(AppRoutes.signupRoute);
+          Get.offAndToNamed(AppRoutes.loginRoute);
         } else {
           Get.offAndToNamed(AppRoutes.homeRoute);
         }

@@ -17,15 +17,15 @@ class SingInScreen extends StatelessWidget {
         return IgnorePointer(
           ignoring: !controller.isLoggedIn,
           child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              leading: InkWell(
-                onTap: (){
-                  Get.back();
-                },
-                child: AssetSVGImageWidget(Assets.iconsArrow),
-              ).paddingOnly(left: margin_6),
-            ),
+            // appBar: AppBar(
+            //   backgroundColor: Colors.white,
+            //   leading: InkWell(
+            //     onTap: (){
+            //       Get.back();
+            //     },
+            //     child: AssetSVGImageWidget(Assets.iconsArrow),
+            //   ).paddingOnly(left: margin_6),
+            // ),
             body: SingleChildScrollView(
               child: SizedBox(
                 height: Get.height * 0.87,
@@ -34,7 +34,7 @@ class SingInScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 10),
+                    SizedBox(height: 20),
                     _loginText(),
                     _form(),
                     forgetPassword(),

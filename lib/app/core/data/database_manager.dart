@@ -77,6 +77,23 @@ class DatabaseManager {
     return null;
   }
 
+  Future<Map<String, dynamic>?> getUserOfPhoneUser(String uuid) async {
+    try {
+      DocumentSnapshot doc = await db.collection('users').doc(uuid).get();
+
+      if (doc.exists) {
+        return doc.data() as Map<String, dynamic>;
+      } else {
+        print("No user found with uuid: $uuid");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting user: ${e.toString()}");
+      return null;
+    }
+  }
+
+
   Future<void> addToWaitingUsers(String userId) async {
     try {
       DocumentReference docRef =

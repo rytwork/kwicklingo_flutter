@@ -8,6 +8,8 @@ class ForgotPasswordScreen extends StatelessWidget {
   final GlobalKey<FormState> forgotPasswordFormGlobalKey =
       GlobalKey<FormState>();
 
+  ForgotPasswordScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -78,8 +80,7 @@ class ForgotPasswordScreen extends StatelessWidget {
         buttonBgColor: AppColors.affair,
         onPressed: () {
           if (forgotPasswordFormGlobalKey.currentState!.validate()) {
-            showCustomDialog();
-            // Get.toNamed(AppRoutes.otpVerificationRoute);
+            controller.resetPassword();
           }
         },
         buttonText: strResetPassword,
@@ -106,43 +107,4 @@ class ForgotPasswordScreen extends StatelessWidget {
                       decoration: TextDecoration.underline)),
             ]),
       ).paddingOnly(bottom: margin_24);
-
-
-  void showCustomDialog() {
-    Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: height_5),
-              AssetSVGImageWidget(iconsForgotDialogIcon),
-              Text(
-                strCheckEmail,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Text(
-                strForgotDialogDes,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              MaterialButton(
-                onPressed: () {
-                  Get.back(); // Close the dialog
-                },
-                child: TextView(text: strDone,textStyle: textStyleBodyLarge().copyWith(color: Colors.white),),
-                color: AppColors.affair,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
 }

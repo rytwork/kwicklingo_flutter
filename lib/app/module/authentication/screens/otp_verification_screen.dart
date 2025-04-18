@@ -9,6 +9,8 @@ class OtpVerificationScreen extends StatelessWidget {
   final themeController = Get.put(ThemeController());
   final GlobalKey<FormState> otpVerifyFormGlobalKey = GlobalKey<FormState>();
 
+  OtpVerificationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<OtpVerificationController>(
@@ -61,7 +63,7 @@ class OtpVerificationScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     fontSize: font_12,
                     decoration: TextDecoration.underline,
-                    color: AppColors.appColor)),
+                    color: AppColors.affair)),
           ]),
     );
   }

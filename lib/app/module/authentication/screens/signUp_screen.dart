@@ -19,15 +19,15 @@ class SignUpScreen extends StatelessWidget {
           return IgnorePointer(
             ignoring: controller.isIgnoreInteraction,
             child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: Colors.white,
-                leading: InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: AssetSVGImageWidget(Assets.iconsArrow),
-                ).paddingOnly(left: margin_6),
-              ),
+              // appBar: AppBar(
+              //   backgroundColor: Colors.white,
+              //   leading: InkWell(
+              //     onTap: () {
+              //       Get.back();
+              //     },
+              //     child: AssetSVGImageWidget(Assets.iconsArrow),
+              //   ).paddingOnly(left: margin_6),
+              // ),
               body: SingleChildScrollView(
                 child: SizedBox(
                   child: Column(
@@ -37,7 +37,7 @@ class SignUpScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(height: height_10),
+                          SizedBox(height: height_20),
                           TextView(
                             text: strSignup,
                             textStyle: textStyleBodyLarge().copyWith(

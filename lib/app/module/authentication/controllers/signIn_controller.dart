@@ -54,7 +54,6 @@ class SignInController extends GetxController {
           } else {
             print("User not found.");
           }
-          EasyLoading.dismiss();
           isLoggedIn = true;
           update();
         } else {
@@ -96,6 +95,7 @@ class SignInController extends GetxController {
           "verificationId": verificationId,
           "phoneNumber": phoneNumber
         });
+        EasyLoading.dismiss();
       },
       codeAutoRetrievalTimeout: (String verificationId) {
         this.verificationId = verificationId;
