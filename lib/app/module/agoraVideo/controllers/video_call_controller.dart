@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kwicklingo/app/export.dart';
+import 'package:KwickLingo/app/export.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class VideoCallController extends GetxController {
@@ -79,6 +79,8 @@ class VideoCallController extends GetxController {
           debugPrint("Remote user $remoteUid left");
           remoteUsers.remove(remoteUid);
           await deleteConnection();
+          await deleteMessage();
+          Get.back();
           update();
         },
         onError: (ErrorCodeType code, String message) {
@@ -107,7 +109,6 @@ class VideoCallController extends GetxController {
               channel = channelName;
               print("Token received: $token");
               print("Channel name received: $channel");
-
               if (token.isNotEmpty && channel.isNotEmpty && !isJoined) {
                 await joinChannel();
               }
@@ -271,6 +272,19 @@ class VideoCallController extends GetxController {
     }
   }
 
+
+  Future<void> deleteMessage() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('channels')
+          .doc(channel.isEmpty ? "unknown" : channel)
+          .delete();
+      print("Successfully Deleted");
+    } catch (e) {
+      print("Error deleting message: $e");
+    }
+  }
+
   void scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 10), () {
       if (scrollController.hasClients) {
@@ -282,11 +296,11 @@ class VideoCallController extends GetxController {
   Future<void> logout() async {
     try {
       await FirebaseAuth.instance.signOut();
-      Get.snackbar("Kwicklingo", "Logged out successfully",
+      Get.snackbar("KwickLingo", "Logged out successfully",
           backgroundColor: Colors.white12);
       Get.offAllNamed(AppRoutes.splashRoute);
     } catch (e) {
-      Get.snackbar("Kwicklingo", "Error: ${e.toString()}");
+      Get.snackbar("KwickLingo", "Error: ${e.toString()}");
     }
   }
 

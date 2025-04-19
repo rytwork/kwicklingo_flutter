@@ -1,8 +1,8 @@
-import 'package:kwicklingo/app/module/authentication/bindings/otp_verification_binding.dart';
-import 'package:kwicklingo/app/module/homePage/bindings/homepage_binding.dart';
-import 'package:kwicklingo/app/module/homePage/screens/homepage_screen.dart';
-import 'package:kwicklingo/app/module/uploadProfile/bindings/upload_profile_binding.dart';
-import 'package:kwicklingo/app/module/uploadProfile/screens/upload_profile_screen.dart';
+import 'package:KwickLingo/app/module/authentication/bindings/otp_verification_binding.dart';
+import 'package:KwickLingo/app/module/homePage/bindings/homepage_binding.dart';
+import 'package:KwickLingo/app/module/homePage/screens/homepage_screen.dart';
+import 'package:KwickLingo/app/module/uploadProfile/bindings/upload_profile_binding.dart';
+import 'package:KwickLingo/app/module/uploadProfile/screens/upload_profile_screen.dart';
 
 import '../export.dart';
 
