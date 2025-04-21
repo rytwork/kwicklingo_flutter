@@ -36,11 +36,9 @@ class HomepageController extends GetxController with GetTickerProviderStateMixin
   }
 
   Future<void> getUserData() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? currentUser = auth.currentUser;
-
-    if (currentUser != null) {
-      userData.value = await databaseManager.getUserOfPhoneUser(currentUser.uid);
+    var userId = await box.read("uid");
+    if (userId != null) {
+      userData.value = await databaseManager.getUserOfPhoneUser(userId);
       print("userData: ${userData.value?["name"]}");
     }
   }

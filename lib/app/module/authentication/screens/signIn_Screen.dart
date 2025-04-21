@@ -34,7 +34,7 @@ class SingInScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 20),
+                    SizedBox(height: 80),
                     _loginText(),
                     _form(),
                     forgetPassword(),

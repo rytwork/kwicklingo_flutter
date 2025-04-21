@@ -95,30 +95,29 @@ class DatabaseManager {
 
 
   Future<void> addToWaitingUsers(String userId) async {
-    try {
-      DocumentReference docRef =
-          db.collection("connections").doc("waiting-users");
+    DocumentReference docRef = db.collection("connections").doc("waiting-users");
 
-      // Append userId to the array (creates document automatically if it doesn't exist)
+    try {
+      print("Attempting to add user ID $userId to waiting-users...");
       await docRef.update({
         "ids": FieldValue.arrayUnion([userId]),
       });
-
       print("User ID $userId added successfully!");
-    } catch (e) {
-      if (e.toString().contains("NOT_FOUND")) {
-        DocumentReference docRef =
-            db.collection("connections").doc("waiting-users");
-        // Document doesn't exist, so create with userId
+    } on FirebaseException catch (e) {
+      if (e.code == 'not-found') {
+        print("Document not found. Creating new document...");
         await docRef.set({
           "ids": [userId]
         });
         print("Document created and User ID $userId added.");
       } else {
-        print("Error adding user ID: $e");
+        print("FirebaseException: ${e.message}");
       }
+    } catch (e) {
+      print("General error: $e");
     }
   }
+
 
   Future<String?> removeFromWaitingList({
     required String uid,

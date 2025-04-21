@@ -29,6 +29,9 @@ class VideoCallController extends GetxController {
   String channel = "";
   final String appId = "78e6f90660864bdb959afaaf1023e313";
   var token = "";
+  var myUId = "";
+  bool isRemoteVideoMuted = false;
+  bool isRemoteAudioMuted = false;
 
   @override
   Future<void> onInit() async {
@@ -70,6 +73,7 @@ class VideoCallController extends GetxController {
         },
         onUserJoined: (RtcConnection connection, int uid, int elapsed) async {
           debugPrint("Remote user $uid joined");
+          isRemoteVideoMuted = false;
           await deleteConnection();
           remoteUsers.add(uid);
           update();
@@ -79,9 +83,32 @@ class VideoCallController extends GetxController {
           debugPrint("Remote user $remoteUid left");
           remoteUsers.remove(remoteUid);
           await deleteConnection();
-          await deleteMessage();
+          await deleteChannel(channel);
           Get.back();
           update();
+        },
+        onRemoteVideoStateChanged: (
+          RtcConnection connection,
+          int remoteUid,
+          RemoteVideoState state,
+          RemoteVideoStateReason reason,
+          int elapsed,
+        ) {
+          debugPrint("Remote video state changed for $remoteUid: $state");
+
+          if (state == RemoteVideoState.remoteVideoStateStopped ||
+              state == RemoteVideoState.remoteVideoStateFrozen) {
+            isRemoteVideoMuted = true;
+          } else if (state == RemoteVideoState.remoteVideoStateDecoding ||
+              state == RemoteVideoState.remoteVideoStateStarting) {
+            isRemoteVideoMuted = false;
+          }
+          update();
+        },
+        onUserMuteAudio: (RtcConnection connection, int remoteUid, bool muted) {
+          debugPrint("Remote user $remoteUid audio muted: $muted");
+          isRemoteAudioMuted = muted;
+          update(); // For GetX, or setState otherwise
         },
         onError: (ErrorCodeType code, String message) {
           debugPrint("Agora SDK error: $code, $message");
@@ -135,7 +162,7 @@ class VideoCallController extends GetxController {
         publishMicrophoneTrack: true,
         clientRoleType: ClientRoleType.clientRoleBroadcaster,
         audienceLatencyLevel:
-        AudienceLatencyLevelType.audienceLatencyLevelUltraLowLatency,
+            AudienceLatencyLevelType.audienceLatencyLevelUltraLowLatency,
       ),
       uid: 0,
     );
@@ -171,9 +198,9 @@ class VideoCallController extends GetxController {
   }
 
   Future<void> toggleMuteCamera() async {
-    await engine.muteLocalVideoStream(!muteCamera);
     muteCamera = !muteCamera;
     update();
+    await engine.muteLocalVideoStream(!muteCamera);
   }
 
   Future<void> deleteConnection() async {
@@ -231,14 +258,15 @@ class VideoCallController extends GetxController {
 
   Color _getRandomColor() {
     return Color((0xFF000000 +
-        (0x00FFFFFF * (DateTime.now().millisecond % 1000) / 1000))
-        .toInt())
+                (0x00FFFFFF * (DateTime.now().millisecond % 1000) / 1000))
+            .toInt())
         .withOpacity(1.0);
   }
 
   void sendMessage() async {
     final user = FirebaseAuth.instance.currentUser;
     print("user_id: ${user?.uid}");
+    myUId = user?.uid ?? "";
     var message = messageController.text.trim();
     if (user != null && message.isNotEmpty) {
       try {
@@ -270,18 +298,27 @@ class VideoCallController extends GetxController {
         print("Error sending message: $e");
       }
     }
+    update();
   }
 
+  Future<void> deleteChannel(String channelId) async {
+    final channelRef =
+        FirebaseFirestore.instance.collection('channels').doc(channelId);
+    final messagesRef = channelRef.collection('messages');
 
-  Future<void> deleteMessage() async {
     try {
-      await FirebaseFirestore.instance
-          .collection('channels')
-          .doc(channel.isEmpty ? "unknown" : channel)
-          .delete();
-      print("Successfully Deleted");
+      // Fetch and delete all messages
+      final messagesSnapshot = await messagesRef.get();
+      for (final doc in messagesSnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      // Delete the channel document
+      await channelRef.delete();
+
+      print('Channel and its messages deleted successfully.');
     } catch (e) {
-      print("Error deleting message: $e");
+      print('Error deleting channel: $e');
     }
   }
 
@@ -321,7 +358,7 @@ class VideoCallController extends GetxController {
 
   final List<Message> messages = List.generate(
     20,
-        (index) => Message(
+    (index) => Message(
       text: 'Message number $index',
       userName: 'User $index',
     ),

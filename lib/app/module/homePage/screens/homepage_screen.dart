@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:KwickLingo/app/module/homePage/widget/custom_drawer.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../export.dart';
+
+final GetStorage box = GetStorage();
 
 class HomepageScreen extends StatelessWidget {
   final HomepageController controller = Get.put(HomepageController());
@@ -79,9 +82,9 @@ class HomepageScreen extends StatelessWidget {
         MaterialButton(
           color: AppColors.affair,
           onPressed: () async {
-            var user = await controller.databaseManager.getCurrentUser();
-            print("user id : ${user?.uid}");
-            controller.databaseManager.addToWaitingUsers(user?.uid ?? "");
+            var userId = await box.read("uid");
+            print("userId: $userId");
+            await controller.databaseManager.addToWaitingUsers(userId ?? "");
             Get.toNamed(AppRoutes.videoCallScreen);
           },
           child: Row(
