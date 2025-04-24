@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../export.dart';
@@ -17,6 +21,7 @@ class VideoCallController extends GetxController {
   final FocusNode channelFocusNode = FocusNode();
   ScrollController scrollController = ScrollController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GetStorage box = GetStorage();
 
   final int dotCount = 7;
   List<Color> dotColors = [Colors.yellow];
@@ -44,7 +49,17 @@ class VideoCallController extends GetxController {
     await setupLocalVideo();
     setupEventHandlers();
     _startAnimation();
-    await listenForUpdates(); // Only call joinChannel inside this
+    Future.delayed(Duration.zero, () async {
+      final arguments = Get.arguments;
+      if (arguments != null && arguments is Map<String, dynamic>) {
+        token = arguments['token'];
+        channel = arguments['channelName'];
+        if (token.isNotEmpty && channel.isNotEmpty && !isJoined) {
+          await joinChannel();
+        }
+      }
+    });
+    // await listenForUpdates(); // Only call joinChannel inside this
   }
 
   Future<void> _requestPermissions() async {
@@ -53,10 +68,12 @@ class VideoCallController extends GetxController {
 
   Future<void> _initializeAgoraVideoSDK() async {
     engine = createAgoraRtcEngine();
-    await engine.initialize(RtcEngineContext(
-      appId: appId,
-      channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-    ));
+    await engine.initialize(
+      RtcEngineContext(
+        appId: appId,
+        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+      ),
+    );
   }
 
   Future<void> setupLocalVideo() async {
@@ -79,13 +96,16 @@ class VideoCallController extends GetxController {
           remoteUsers.add(uid);
           update();
         },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) async {
+        onUserOffline: (
+          RtcConnection connection,
+          int remoteUid,
+          UserOfflineReasonType reason,
+        ) async {
           debugPrint("Remote user $remoteUid left");
           remoteUsers.remove(remoteUid);
           await deleteConnection();
           await deleteChannel(channel);
-          Get.back();
+          await getAgoraToken();
           update();
         },
         onRemoteVideoStateChanged: (
@@ -124,29 +144,29 @@ class VideoCallController extends GetxController {
         .doc("connected-users")
         .snapshots()
         .listen((snapshot) async {
-      if (snapshot.exists) {
-        var data = snapshot.data();
-        if (data != null) {
-          for (var entry in data.entries) {
-            var channelName = entry.key;
-            var details = entry.value;
-            User? user = _auth.currentUser;
-            var myUid = user?.uid ?? "";
-            if (details['uid1'] == myUid || details['uid2'] == myUid) {
-              token = details['token'];
-              channel = channelName;
-              print("Token received: $token");
-              print("Channel name received: $channel");
-              if (token.isNotEmpty && channel.isNotEmpty && !isJoined) {
-                await joinChannel();
+          if (snapshot.exists) {
+            var data = snapshot.data();
+            if (data != null) {
+              for (var entry in data.entries) {
+                var channelName = entry.key;
+                var details = entry.value;
+                User? user = _auth.currentUser;
+                var myUid = user?.uid ?? "";
+                if (details['uid1'] == myUid || details['uid2'] == myUid) {
+                  token = details['token'];
+                  channel = channelName;
+                  print("Token received: $token");
+                  print("Channel name received: $channel");
+                  if (token.isNotEmpty && channel.isNotEmpty && !isJoined) {
+                    await joinChannel();
+                  }
+                }
               }
+            } else {
+              print("data is null");
             }
           }
-        } else {
-          print("data is null");
-        }
-      }
-    });
+        });
   }
 
   Future<void> joinChannel() async {
@@ -169,7 +189,7 @@ class VideoCallController extends GetxController {
     );
   }
 
-  Future<void> leaveChannel() async {
+  Future<void> leaveChannel(bool forUpdate) async {
     await deleteConnection();
     await engine.leaveChannel();
     openCamera = true;
@@ -178,7 +198,10 @@ class VideoCallController extends GetxController {
     isJoined = false;
     await deleteChannel(channel);
     update();
-    Get.back();
+    remoteUsers.clear();
+    if (forUpdate) {
+      Get.back(); // Close screen if not for update
+    }
   }
 
   Future<void> switchUserCamera() async {
@@ -213,10 +236,11 @@ class VideoCallController extends GetxController {
       return;
     }
     try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection("connections")
-          .doc("connected-users")
-          .get();
+      DocumentSnapshot snapshot =
+          await FirebaseFirestore.instance
+              .collection("connections")
+              .doc("connected-users")
+              .get();
       if (snapshot.exists) {
         var data = snapshot.data();
         if (data != null && data is Map<String, dynamic>) {
@@ -228,9 +252,7 @@ class VideoCallController extends GetxController {
               await FirebaseFirestore.instance
                   .collection("connections")
                   .doc("connected-users")
-                  .update({
-                channelName: FieldValue.delete(),
-              });
+                  .update({channelName: FieldValue.delete()});
               print("Connection deleted for channel: $channelName");
             }
           }
@@ -242,6 +264,36 @@ class VideoCallController extends GetxController {
       }
     } catch (e) {
       print("Error deleting connection: $e");
+    }
+  }
+
+  Future<void> getAgoraToken() async {
+    await leaveChannel(false);
+    try {
+      final url = Uri.parse(
+        'https://api-g2h54slc7q-uc.a.run.app/api/token/getOrCreateAgoraToken',
+      );
+
+      var userId = await box.read("uid");
+
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({"uid": userId}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        token = data['token'];
+        channel = data['channelName'];
+        if (token.isNotEmpty && channel.isNotEmpty && !isJoined) {
+          await joinChannel();
+        }
+      } else {
+        Fluttertoast.showToast(msg: "Failed to get token: ${response.body}");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "An error occurred: $e");
     }
   }
 
@@ -259,10 +311,10 @@ class VideoCallController extends GetxController {
   }
 
   Color _getRandomColor() {
-    return Color((0xFF000000 +
-                (0x00FFFFFF * (DateTime.now().millisecond % 1000) / 1000))
-            .toInt())
-        .withOpacity(1.0);
+    return Color(
+      (0xFF000000 + (0x00FFFFFF * (DateTime.now().millisecond % 1000) / 1000))
+          .toInt(),
+    ).withOpacity(1.0);
   }
 
   void sendMessage() async {
@@ -272,10 +324,11 @@ class VideoCallController extends GetxController {
     var message = messageController.text.trim();
     if (user != null && message.isNotEmpty) {
       try {
-        final doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
+        final doc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .get();
         if (doc.exists) {
           final data = doc.data();
           String userName = data?['name'] ?? 'No name';
@@ -284,11 +337,11 @@ class VideoCallController extends GetxController {
               .doc((channel == "") ? "unknown" : channel)
               .collection('messages')
               .add({
-            'text': message,
-            'createdAt': Timestamp.now(),
-            'userId': user.uid,
-            'userName': userName,
-          });
+                'text': message,
+                'createdAt': Timestamp.now(),
+                'userId': user.uid,
+                'userName': userName,
+              });
 
           messageController.clear();
           update();
@@ -304,8 +357,9 @@ class VideoCallController extends GetxController {
   }
 
   Future<void> deleteChannel(String channelId) async {
-    final channelRef =
-        FirebaseFirestore.instance.collection('channels').doc(channelId);
+    final channelRef = FirebaseFirestore.instance
+        .collection('channels')
+        .doc(channelId);
     final messagesRef = channelRef.collection('messages');
 
     try {
@@ -335,8 +389,11 @@ class VideoCallController extends GetxController {
   Future<void> logout() async {
     try {
       await FirebaseAuth.instance.signOut();
-      Get.snackbar("KwickLingo", "Logged out successfully",
-          backgroundColor: Colors.white12);
+      Get.snackbar(
+        "KwickLingo",
+        "Logged out successfully",
+        backgroundColor: Colors.white12,
+      );
       Get.offAllNamed(AppRoutes.splashRoute);
     } catch (e) {
       Get.snackbar("KwickLingo", "Error: ${e.toString()}");
@@ -360,10 +417,7 @@ class VideoCallController extends GetxController {
 
   final List<Message> messages = List.generate(
     20,
-    (index) => Message(
-      text: 'Message number $index',
-      userName: 'User $index',
-    ),
+    (index) => Message(text: 'Message number $index', userName: 'User $index'),
   );
 }
 

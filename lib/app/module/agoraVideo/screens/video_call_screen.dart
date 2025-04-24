@@ -72,7 +72,7 @@ class VideoCallScreen extends StatelessWidget {
                         : const Center(child: CircularProgressIndicator()),
 
                     // Chat view overlay
-                    controller.isJoined
+                    (controller.remoteUsers.length > 0)
                         ? Positioned(
                       bottom: 0,
                       left: 0,
@@ -243,9 +243,24 @@ class VideoCallScreen extends StatelessWidget {
                             child: IconButton(
                               icon: const Icon(Icons.call_end,
                                   color: Colors.white),
-                              onPressed: controller.leaveChannel,
+                              onPressed: (){
+                                controller.leaveChannel(true);
+                              }
                             ),
                           ),
+
+                          const SizedBox(height: 16),
+
+                          CircleAvatar(
+                            backgroundColor: Colors.greenAccent, // You can change the color as needed
+                            child: IconButton(
+                              icon: const Icon(Icons.arrow_forward, color: Colors.white),
+                              onPressed: () {
+                                controller.getAgoraToken();
+                              },
+                            ),
+                          ),
+
                         ],
                       ),
                     ) ,

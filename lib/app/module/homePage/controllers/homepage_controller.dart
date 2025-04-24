@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
 import '../../../export.dart';
+import 'dart:convert';
 
 class HomepageController extends GetxController with GetTickerProviderStateMixin {
   late AnimationController animationController;
@@ -42,6 +44,47 @@ class HomepageController extends GetxController with GetTickerProviderStateMixin
       print("userData: ${userData.value?["name"]}");
     }
   }
+
+
+  Future<void> getAgoraToken() async {
+    try {
+      final url = Uri.parse('https://api-g2h54slc7q-uc.a.run.app/api/token/getOrCreateAgoraToken');
+
+      var userId = await box.read("uid");
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "uid": userId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['token'];
+        final channelName = data['channelName'];
+
+        Get.toNamed(AppRoutes.videoCallScreen, arguments: {
+          "token": token,
+          "channelName": channelName
+        });
+
+        print('Agora Token: $token');
+        print('Channel Name: $channelName');
+      } else {
+        print('Failed to get token. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        Fluttertoast.showToast(msg: "Failed to get token: ${response.body}");
+      }
+    } catch (e) {
+      print('Error: $e');
+      Fluttertoast.showToast(msg: "An error occurred: $e");
+    }
+  }
+
 
   Future<void> logoutUser() async {
     Get.defaultDialog(

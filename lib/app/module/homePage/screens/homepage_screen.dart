@@ -82,10 +82,7 @@ class HomepageScreen extends StatelessWidget {
         MaterialButton(
           color: AppColors.affair,
           onPressed: () async {
-            var userId = await box.read("uid");
-            print("userId: $userId");
-            await controller.databaseManager.addToWaitingUsers(userId ?? "");
-            Get.toNamed(AppRoutes.videoCallScreen);
+            controller.getAgoraToken();
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
