@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDxUHJNcHPtCUo6l-Y1h_0Nu3DKJmPKss4',
-    appId: '1:1004565860079:android:363b44676e00475ba2551a',
-    messagingSenderId: '1004565860079',
-    projectId: 'kwicklingo',
-    storageBucket: 'kwicklingo.firebasestorage.app',
+    apiKey: 'AIzaSyCynBz2sD6PGPuLxhfsP2zd4-35RS-r-7M',
+    appId: '1:75689479979:android:8c1798a545b55e6f3d3f6e',
+    messagingSenderId: '75689479979',
+    projectId: 'kwicklingo-new',
+    storageBucket: 'kwicklingo-new.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCKJQk8PEHWvKSH1Nv5rKJFX1yPLqRI1AU',
-    appId: '1:1004565860079:ios:f92ee5dad0480d47a2551a',
-    messagingSenderId: '1004565860079',
-    projectId: 'kwicklingo',
-    storageBucket: 'kwicklingo.firebasestorage.app',
-    iosBundleId: 'com.example.kwicklingo',
+    apiKey: 'AIzaSyB3PgyOI1z2f_oVo-aRPqia2KNtdf0N1H0',
+    appId: '1:75689479979:ios:a96338de9d1fef8f3d3f6e',
+    messagingSenderId: '75689479979',
+    projectId: 'kwicklingo-new',
+    storageBucket: 'kwicklingo-new.firebasestorage.app',
+    iosBundleId: 'com.saurabh.kwicklingo',
   );
 }

@@ -1,40 +1,21 @@
 {
   "project_info": {
-    "project_number": "1004565860079",
-    "project_id": "kwicklingo",
-    "storage_bucket": "kwicklingo.firebasestorage.app"
+    "project_number": "75689479979",
+    "project_id": "kwicklingo-new",
+    "storage_bucket": "kwicklingo-new.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1004565860079:android:b2c9830d17b4128da2551a",
+        "mobilesdk_app_id": "1:75689479979:android:8c1798a545b55e6f3d3f6e",
         "android_client_info": {
-          "package_name": "com.example.Chat_Demo"
+          "package_name": "com.saurabh.kwicklingo"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDxUHJNcHPtCUo6l-Y1h_0Nu3DKJmPKss4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1004565860079:android:363b44676e00475ba2551a",
-        "android_client_info": {
-          "package_name": "com.example.kwicklingo"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDxUHJNcHPtCUo6l-Y1h_0Nu3DKJmPKss4"
+          "current_key": "AIzaSyCynBz2sD6PGPuLxhfsP2zd4-35RS-r-7M"
         }
       ],
       "services": {

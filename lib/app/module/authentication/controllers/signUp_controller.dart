@@ -75,6 +75,7 @@ class SignUpController extends GetxController {
           EasyLoading.dismiss();
           ToastUtils.showToast("The password provided is too weak.");
         } else if (e.code == 'email-already-in-use') {
+          EasyLoading.dismiss();
           ToastUtils.showToast("You're already signed up with this email. Please log in to continue");
         } else {
           EasyLoading.dismiss();

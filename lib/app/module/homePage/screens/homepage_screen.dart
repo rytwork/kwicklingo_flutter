@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:KwickLingo/app/module/homePage/widget/custom_drawer.dart';
+import 'package:kwicklingo/app/module/homePage/widget/custom_drawer.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../export.dart';
 

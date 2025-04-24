@@ -24,7 +24,7 @@ class CreateRoomScreen extends StatelessWidget {
                 onTap: () {
                   Get.back();
                 },
-                child: AssetSVGImageWidget(Assets.iconsArrow),
+                child: AssetSVGImageWidget(iconsArrow),
               ).paddingOnly(left: margin_10),
             ),
             body: SingleChildScrollView(

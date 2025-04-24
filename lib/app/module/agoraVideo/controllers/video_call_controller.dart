@@ -6,8 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:KwickLingo/app/export.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../../export.dart';
 
 class VideoCallController extends GetxController {
   late final RtcEngine engine;
@@ -175,6 +176,7 @@ class VideoCallController extends GetxController {
     muteCamera = false;
     muteAllRemoteVideo = false;
     isJoined = false;
+    await deleteChannel(channel);
     update();
     Get.back();
   }

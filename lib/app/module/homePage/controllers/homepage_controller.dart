@@ -44,18 +44,29 @@ class HomepageController extends GetxController with GetTickerProviderStateMixin
   }
 
   Future<void> logoutUser() async {
-    EasyLoading.show();
-    try {
-      await FirebaseAuth.instance.signOut();
-      await box.remove("uid");
-      Get.offAllNamed(AppRoutes.splashRoute);
-      EasyLoading.dismiss();
-    } catch (e) {
-      Fluttertoast.showToast(msg: "Otp Verification Failed: $e");
-      print("Error logging out: ${e.toString()}");
-      EasyLoading.dismiss();
-    }
+    Get.defaultDialog(
+      title: "Logout Confirmation",
+      middleText: "Are you sure you want to logout?",
+      textCancel: "Cancel",
+      textConfirm: "Logout",
+      confirmTextColor: Colors.white,
+      onConfirm: () async {
+        Get.back(); // close the dialog
+        EasyLoading.show();
+        try {
+          await FirebaseAuth.instance.signOut();
+          await box.remove("uid");
+          Get.offAllNamed(AppRoutes.splashRoute);
+          EasyLoading.dismiss();
+        } catch (e) {
+          Fluttertoast.showToast(msg: "Logout Failed: $e");
+          print("Error logging out: ${e.toString()}");
+          EasyLoading.dismiss();
+        }
+      },
+    );
   }
+
 
   void openDrawer() {
     scaffoldKey.currentState?.openDrawer();

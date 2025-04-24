@@ -18,7 +18,7 @@ class Assets {
   static const String iconsGender = 'assets/icons/Gender.png';
   static const String iconsGlobe = 'assets/icons/Globe.png';
   static const String iconsGoogle = 'assets/icons/google.svg';
-  static const String iconsKwickLingoLogo = 'assets/icons/kwickLingo_logo.png';
+  static const String iconsKwickLingoLogo = 'assets/icons/icon.png';
   static const String iconsKwicklingo = 'assets/icons/kwicklingo.jpg';
   static const String iconsLogout = 'assets/icons/logout.svg';
   static const String iconsMicrophone342 = 'assets/icons/microphone-342.svg';

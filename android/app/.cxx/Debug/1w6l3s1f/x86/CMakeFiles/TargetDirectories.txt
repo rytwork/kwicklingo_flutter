@@ -1,2 +1,0 @@
-C:/Users/91639/StudioProjects/kwicklingo_flutter/android/app/.cxx/Debug/1w6l3s1f/x86/CMakeFiles/edit_cache.dir
-C:/Users/91639/StudioProjects/kwicklingo_flutter/android/app/.cxx/Debug/1w6l3s1f/x86/CMakeFiles/rebuild_cache.dir
